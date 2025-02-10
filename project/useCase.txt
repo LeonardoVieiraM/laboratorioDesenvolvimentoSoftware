@@ -1,0 +1,22 @@
+@startuml
+
+Aluno --> (Realiza matricula em disciplina obrigatoria)
+Aluno --> (Realiza matricula em disciplinas opcionais)
+Aluno --> (Cancela matricula)
+Aluno --> (Realiza pagamento)
+Aluno --> (Realiza login1)
+
+Secretaria --> (Gerencia curriculos)
+Secretaria --> (Gerencia matriculas de alunos)
+Secretaria --> (Gerencia professores)
+Secretaria --> (Gerencia disciplinas)
+Secretaria --> (Realiza login2)
+
+Professor --> (Acompanha alunos matriculados)
+Professor --> (Realiza login3)
+
+"Realiza login" as (Realiza login1)
+"Realiza login" as (Realiza login2)
+"Realiza login" as (Realiza login3)
+
+@enduml
