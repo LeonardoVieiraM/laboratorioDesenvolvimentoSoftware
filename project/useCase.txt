@@ -12,21 +12,21 @@ u <|- p
 u <|- a
 u <|- s
 
-rectangle {
-usecase "Realiza matricula" as a1
-usecase "Realiza matricula em disciplinas obrigatorias" as a2
-usecase "Realiza matricula em disciplinas opcionais" as a3
-usecase "Cancela matricula" as a4
-usecase "Realiza pagamento" as a5
+rectangle "Sistema Acadêmico" {
+    usecase "Realiza matricula" as a1
+    usecase "Realiza matricula em disciplinas obrigatorias" as a2
+    usecase "Realiza matricula em disciplinas opcionais" as a3
+    usecase "Cancela matricula" as a4
+    usecase "Realiza pagamento" as a5
 
-usecase "Gerencia curriculos" as s1
-usecase "Gerencia matriculas de alunos" as s2
-usecase "Gerencia professores" as s3
-usecase "Gerencia disciplinas" as s4
+    usecase "Gerencia curriculos" as s1
+    usecase "Gerencia matriculas de alunos" as s2
+    usecase "Gerencia professores" as s3
+    usecase "Gerencia disciplinas" as s4
 
-usecase "Acompanha alunos matriculados" as p1
+    usecase "Acompanha alunos matriculados" as p1
 
-usecase "Realiza login" as u1
+    usecase "Realiza login" as u1
 }
 
 u --> u1
