@@ -7,7 +7,7 @@ Gere matricula para alunos e organiza todas as informações referentes aos mesm
 * Tiago Assunção
 
 ## Orientadores
-* Cleiton
+* Cleiton Tavares
 
 ## Instruções de utilização
 Assim que a primeira versão do sistema estiver disponível, deverá complementar com as instruções de utilização. Descreva como instalar eventuais dependências e como executar a aplicação.
