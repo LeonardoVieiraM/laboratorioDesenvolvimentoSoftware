@@ -13,20 +13,26 @@ u <|- a
 u <|- s
 
 rectangle "Sistema Acadêmico" {
-    usecase "Realiza matricula" as a1
-    usecase "Realiza matricula em disciplinas obrigatorias" as a2
-    usecase "Realiza matricula em disciplinas opcionais" as a3
-    usecase "Cancela matricula" as a4
-    usecase "Realiza pagamento" as a5
+    rectangle "Matrícula" {
+        usecase "Realizar matricula" as a1
+        usecase "Realizar matricula em disciplinas obrigatorias" as a2
+        usecase "Realizar matricula em disciplinas opcionais" as a3
+        usecase "Cancelar matricula" as a4
+        usecase "Realizar pagamento" as a5
+    }
 
-    usecase "Gerencia curriculos" as s1
-    usecase "Gerencia matriculas de alunos" as s2
-    usecase "Gerencia professores" as s3
-    usecase "Gerencia disciplinas" as s4
+    rectangle "Gestão Acadêmica" {
+        usecase "Gerenciar curriculos" as s1
+        usecase "Gerenciar matriculas de alunos" as s2
+        usecase "Gerenciar professores" as s3
+        usecase "Gerenciar disciplinas" as s4
+    }
 
-    usecase "Acompanha alunos matriculados" as p1
+    rectangle "Acompanhamento de Turmas" {
+        usecase "Acompanhar alunos matriculados" as p1
+    }
 
-    usecase "Realiza login" as u1
+    usecase "Realizar login" as u1
 }
 
 u --> u1
