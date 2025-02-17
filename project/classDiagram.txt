@@ -1,0 +1,65 @@
+@startuml
+
+class usuario{
+-id: int
+-senha: string
++login(int, string): void
+}
+
+class aluno{
+-matriculaAluno: int
+-nome: string
+-curso: string
+-disciplinasObrigatorias: [int]
+-disciplinasOptativas: [int]
+-pagamentoPendente: bool
++realizarMatriculaDisciplina(int): void
++cancelarMatriculaDisciplina(int): void
++pagamento(): void
+}
+
+class professor{
+-idProfessor: int
+-nome: string
++acompanharDisciplina(int): void
+}
+
+class secretaria{
+-idSecretaria: int
+-nome: string
++visualizarCurriculoSemestre(): void
++visualizarMatriculasAlunos(): void
++adicionarMatriculaAluno(string): aluno
++removerMatriculaAluno(int): void
++editarMatriculaAluno(int): void
++visualizarProfessores(): void
++adicionarProfessor(string): professor
++removerProfessor(int): void
++editarProfessor(int): void
++visualizarDisciplinas(): void
++adicionarDisciplina(string): disciplina
++removerDisciplina(int): void
++editarDisciplina(int): void
+}
+
+class disciplina{
+-id: int
+-nome: string
+-opcional: bool
+-alunosMax: int
+-alunos: [int]
+-matriculaAberta: bool
+-professor: string
+}
+
+class curso{
+-nome: string
+-disciplinas: [int]
+-creditos: int
+}
+
+usuario <|-- aluno
+usuario <|-- professor
+usuario <|-- secretaria
+
+@enduml
