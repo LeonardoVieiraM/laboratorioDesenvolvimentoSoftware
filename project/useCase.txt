@@ -7,30 +7,30 @@ actor Professor as p
 actor Aluno as a
 actor Secretaria as s
 actor Usuario as u
+actor EquipeDeCobranca as e
 
 u <|- p
 u <|- a
 u <|- s
 
+(gerenciar se refere as funcionalidades CRUD, sendo elas a possibilidade de adicionar, ler, atualizar e remover um dado)
+
 rectangle "Sistema Acadêmico" {
-    rectangle "Matrícula" {
-        usecase "Realizar matricula" as a1
-        usecase "Realizar matricula em disciplinas obrigatorias" as a2
-        usecase "Realizar matricula em disciplinas opcionais" as a3
-        usecase "Cancelar matricula" as a4
-        usecase "Realizar pagamento" as a5
-    }
 
-    rectangle "Gestão Acadêmica" {
-        usecase "Gerenciar curriculos" as s1
-        usecase "Gerenciar matriculas de alunos" as s2
-        usecase "Gerenciar professores" as s3
-        usecase "Gerenciar disciplinas" as s4
-    }
+    usecase "Realizar matricula" as a1
+    usecase "Realizar matricula em disciplinas obrigatorias" as a2
+    usecase "Realizar matricula em disciplinas opcionais" as a3
+    usecase "Cancelar matricula" as a4
+    usecase "Realizar pagamento" as a5
 
-    rectangle "Acompanhamento de Turmas" {
-        usecase "Acompanhar alunos matriculados" as p1
-    }
+    usecase "Gerenciar curriculos" as s1
+    usecase "Gerenciar matriculas de alunos" as s2
+    usecase "Gerenciar professores" as s3
+    usecase "Gerenciar disciplinas" as s4
+
+    usecase "Acompanhar alunos matriculados" as p1
+
+    usecase "notificar aluno sobre pagamento" as e1
 
     usecase "Realizar login" as u1
 }
@@ -43,12 +43,14 @@ a --> a1
 a --> a4
 a --> a5
 
-a1 --> a2
-a1 --> a3
+a1 .> a2 : include
+a1 .> a3 : extend
 
 s --> s1
 s --> s2
 s --> s3
 s --> s4
+
+e --> e1
 
 @enduml

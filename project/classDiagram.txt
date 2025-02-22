@@ -6,6 +6,10 @@ class usuario{
 +login(int, string): void
 }
 
+class cobrador{
++acionarPagamentoAluno(int): void
+}
+
 class aluno{
 -matriculaAluno: int
 -nome: string
@@ -15,7 +19,7 @@ class aluno{
 -pagamentoPendente: bool
 +realizarMatriculaDisciplina(int): void
 +cancelarMatriculaDisciplina(int): void
-+pagamento(): void
++realizarPagamento(): void
 }
 
 class professor{
@@ -40,6 +44,7 @@ class secretaria{
 +adicionarDisciplina(string): disciplina
 +removerDisciplina(int): void
 +editarDisciplina(int): void
++periodoMatriculas(): void
 }
 
 class disciplina{
