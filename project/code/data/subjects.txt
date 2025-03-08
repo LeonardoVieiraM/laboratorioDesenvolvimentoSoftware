@@ -1,0 +1,3 @@
+1,Programação I,true,60,Dr. Silva,0
+2,Banco de Dados,false,60,Dr. Souza,0
+3,aaa,true,10,aaa,4
