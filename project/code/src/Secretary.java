@@ -138,7 +138,6 @@ public class Secretary extends User {
             if (subject.getId() == subjectId) {
                 subject.setName(newName);
                 subject.setMandatory(isMandatory);
-                subject.setMaxStudents(maxStudents);
                 subject.setProfessor(professor);
                 subject.setCourseId(courseId); 
                 System.out.println("Disciplina " + subjectId + " editada com sucesso.");

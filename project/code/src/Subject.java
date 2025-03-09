@@ -126,4 +126,13 @@ public class Subject {
             System.out.println("Erro ao salvar disciplinas: " + e.getMessage());
         }
     }
+
+    public boolean isMandatory() {
+        return isMandatory;
+    }
+
+    public void setEnrollmentOpen(boolean isEnrollmentOpen) {
+        this.isEnrollmentOpen = isEnrollmentOpen;
+    }
+
 }

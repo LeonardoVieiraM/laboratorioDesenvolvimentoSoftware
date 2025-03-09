@@ -20,6 +20,7 @@ public class Main {
     private static List<Professor> professors = new ArrayList<>();
     private static List<Subject> subjects = new ArrayList<>();
     private static List<Course> courses = new ArrayList<>();
+    private static BillingSystem billingSystem = new BillingSystem();
 
     public static void main(String[] args) {
         loadInitialData();
@@ -472,7 +473,7 @@ public class Main {
                                     System.out.println(
                                             "Curso não encontrado. Crie o curso antes de adicionar a disciplina.");
                                 } else {
-                                    secretaria.addSubject(subjectName, isMandatory, maxStudents, professor, courseId,
+                                    secretaria.addSubject(subjectName, isMandatory, professor, courseId,
                                             subjects, courses);
                                     Subject.saveSubjects(subjects, SUBJECTS_FILE);
                                 }
@@ -511,10 +512,10 @@ public class Main {
                                 }
                                 break;
                             case 12:
-                                secretaria.openEnrollmentPeriod();
+                                secretaria.openEnrollmentPeriod(subjects);
                                 break;
                             case 13:
-                                secretaria.closeEnrollmentPeriod();
+                                secretaria.closeEnrollmentPeriod(subjects);
                                 break;
                             case 14:
                                 System.out.print("Nome do curso: ");
