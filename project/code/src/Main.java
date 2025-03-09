@@ -59,6 +59,7 @@ public class Main {
         courses = Course.loadCourses(COURSES_FILE);
         subjects = Subject.loadSubjects(SUBJECTS_FILE);
         professors = Professor.loadProfessors(PROFESSORS_FILE);
+        students = Student.loadStudents(STUDENTS_FILE);
 
         for (Subject subject : subjects) {
             Course course = courses.stream()
@@ -155,6 +156,8 @@ public class Main {
         }
 
         System.out.println("Aluno cadastrado com sucesso!");
+        System.out.println("ID do aluno: " + newId);
+        System.out.println("Nome do aluno: " + name);
     }
 
     // Método genérico para salvar dados em um arquivo
@@ -262,6 +265,8 @@ public class Main {
         System.out.println("\nCadastro de Professor:");
         System.out.print("Nome: ");
         String name = scanner.nextLine();
+        System.out.println("Senha: ");
+        String senha = scanner.nextLine();
 
         // Gerar ID automático para o professor
         int newId = professors.size() + 1;
@@ -271,7 +276,7 @@ public class Main {
         professors.add(newProfessor);
 
         // Salvar no arquivo users.txt
-        boolean userSaved = saveToFile(USERS_FILE, newId + ",senha,professor," + name + "\n");
+        boolean userSaved = saveToFile(USERS_FILE, newId + "," + senha + "," + "professor" + "," + name + "\n");
         if (!userSaved) {
             System.out.println("Erro ao salvar dados do usuário.");
             return;
@@ -285,6 +290,8 @@ public class Main {
         }
 
         System.out.println("Professor " + name + " adicionado com sucesso.");
+        System.out.println("ID do professor: " + newId);
+        System.out.println("Nome do professor: " + name);
     }
 
     // Login de Professor
@@ -390,6 +397,8 @@ public class Main {
         }
 
         System.out.println("Secretaria cadastrada com sucesso!");
+        System.out.println("ID da secretaria: " + id);
+        System.out.println("Nome da secretaria: " + name);
     }
 
     // Login de Secretaria
