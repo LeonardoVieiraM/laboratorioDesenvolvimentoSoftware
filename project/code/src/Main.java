@@ -56,11 +56,28 @@ public class Main {
     }
 
     private static void loadInitialData() {
-        courses.add(new Course("Ciência da Computação", 120));
-        courses.add(new Course("Engenharia de Software", 120));
-    
-        subjects.add(new Subject(1, "Programação I", false, "Dr. Silva", 1));
-        subjects.add(new Subject(2, "Banco de Dados", true, "Dr. Souza", 1));
+        courses = Course.loadCourses(COURSES_FILE);
+        subjects = Subject.loadSubjects(SUBJECTS_FILE);
+        professors = Professor.loadProfessors(PROFESSORS_FILE);
+
+        for (Subject subject : subjects) {
+            Course course = courses.stream()
+                    .filter(c -> c.getId() == subject.getCourseId())
+                    .findFirst()
+                    .orElse(null);
+            if (course != null) {
+                course.addSubject(subject);
+            }
+        }
+
+        if (courses.isEmpty()) {
+            courses.add(new Course("Ciência da Computação", 120));
+            courses.add(new Course("Engenharia de Software", 120));
+        }
+        if (subjects.isEmpty()) {
+            subjects.add(new Subject(1, "Programação I", false, "Dr. Silva", 1));
+            subjects.add(new Subject(2, "Banco de Dados", true, "Dr. Souza", 1));
+        }
     }
 
     // Menu do Aluno
@@ -92,32 +109,46 @@ public class Main {
     // Cadastro de Aluno
     private static void registerStudent(List<Course> courses) {
         System.out.println("\nCadastro de Aluno:");
-        System.out.print("ID: ");
-        int id = scanner.nextInt();
-        scanner.nextLine();
-        System.out.print("Senha: ");
-        String password = scanner.nextLine();
-        System.out.print("Nome: ");
-        String name = scanner.nextLine();
-        System.out.print("Curso: ");
-        String courseName = scanner.nextLine();
 
-        // Verificar se o curso existe e obter seu ID
-        int courseId = Course.getCourseIdByName(courseName, courses); // Chamada correta
-        if (courseId == -1) {
+        // Exibir lista de cursos cadastrados
+        System.out.println("Cursos disponíveis:");
+        for (Course course : courses) {
+            System.out.println("ID: " + course.getId() + " | Nome: " + course.getName());
+        }
+
+        // Solicitar ID do curso
+        System.out.print("Selecione o ID do curso: ");
+        int courseId = scanner.nextInt();
+        scanner.nextLine();
+
+        // Verificar se o curso existe
+        if (!Course.courseExistsById(courseId, courses)) {
             System.out.println("Curso não encontrado.");
             return;
         }
 
+        // Solicitar nome e senha do aluno
+        System.out.print("Nome do aluno: ");
+        String name = scanner.nextLine();
+        System.out.print("Senha do aluno: ");
+        String password = scanner.nextLine();
+
+        // Gerar ID automático para o aluno
+        int newId = students.size() + 1;
+
+        // Criar e adicionar o aluno à lista
+        Student newStudent = new Student(newId, password, name, courseId);
+        students.add(newStudent);
+
         // Salvar no arquivo users.txt
-        boolean userSaved = saveToFile(USERS_FILE, id + "," + password + ",student," + name + "," + courseId + "\n");
+        boolean userSaved = saveToFile(USERS_FILE, newId + "," + password + ",student," + name + "," + courseId + "\n");
         if (!userSaved) {
             System.out.println("Erro ao salvar dados do usuário.");
             return;
         }
 
         // Salvar no arquivo students.txt
-        boolean studentSaved = saveToFile(STUDENTS_FILE, id + "," + name + "," + courseId + ",,,\n");
+        boolean studentSaved = saveToFile(STUDENTS_FILE, newId + "," + name + "," + courseId + ",,,\n");
         if (!studentSaved) {
             System.out.println("Erro ao salvar dados do aluno.");
             return;
@@ -227,31 +258,33 @@ public class Main {
     }
 
     // Cadastro de Professor
-    private static void registerProfessor() {
+    public static void registerProfessor() {
         System.out.println("\nCadastro de Professor:");
-        System.out.print("ID: ");
-        int id = scanner.nextInt();
-        scanner.nextLine();
-        System.out.print("Senha: ");
-        String password = scanner.nextLine();
         System.out.print("Nome: ");
         String name = scanner.nextLine();
 
+        // Gerar ID automático para o professor
+        int newId = professors.size() + 1;
+
+        // Criar e adicionar o professor à lista
+        Professor newProfessor = new Professor(newId, "senha", name);
+        professors.add(newProfessor);
+
         // Salvar no arquivo users.txt
-        boolean userSaved = saveToFile(USERS_FILE, id + "," + password + ",professor," + name + "\n");
+        boolean userSaved = saveToFile(USERS_FILE, newId + ",senha,professor," + name + "\n");
         if (!userSaved) {
             System.out.println("Erro ao salvar dados do usuário.");
             return;
         }
 
         // Salvar no arquivo professors.txt
-        boolean professorSaved = saveToFile(PROFESSORS_FILE, id + "," + name + "\n");
+        boolean professorSaved = saveToFile(PROFESSORS_FILE, newId + "," + name + "\n");
         if (!professorSaved) {
             System.out.println("Erro ao salvar dados do professor.");
             return;
         }
 
-        System.out.println("Professor cadastrado com sucesso!");
+        System.out.println("Professor " + name + " adicionado com sucesso.");
     }
 
     // Login de Professor
@@ -461,20 +494,25 @@ public class Main {
                                 System.out.print("É obrigatória? (true/false): ");
                                 boolean isMandatory = scanner.nextBoolean();
                                 scanner.nextLine();
-                                System.out.print("Número máximo de alunos: ");
-                                int maxStudents = scanner.nextInt();
-                                scanner.nextLine();
-                                System.out.print("Professor responsável: ");
-                                String professor = scanner.nextLine();
-                                System.out.print("ID do curso associado: ");
+                                System.out.println("Professores disponíveis:");
+                                for (Professor professor : professors) {
+                                    System.out.println("ID: " + professor.getId() + " | Nome: " + professor.getName());
+                                }
+                                System.out.print("Selecione o nome do professor responsável: ");
+                                professorName = scanner.nextLine();
+                                System.out.println("Cursos disponíveis:");
+                                for (Course course : courses) {
+                                    System.out.println("ID: " + course.getId() + " | Nome: " + course.getName());
+                                }
+                                System.out.print("Selecione o ID do curso associado: ");
                                 courseId = scanner.nextInt();
                                 scanner.nextLine();
                                 if (!Course.courseExistsById(courseId, courses)) {
                                     System.out.println(
                                             "Curso não encontrado. Crie o curso antes de adicionar a disciplina.");
                                 } else {
-                                    secretaria.addSubject(subjectName, isMandatory, professor, courseId,
-                                            subjects, courses);
+                                    Secretary.addSubject(subjectName, isMandatory, professorName, courseId, subjects,
+                                            courses);
                                     Subject.saveSubjects(subjects, SUBJECTS_FILE);
                                 }
                                 break;
@@ -494,19 +532,26 @@ public class Main {
                                 System.out.print("É obrigatória? (true/false): ");
                                 isMandatory = scanner.nextBoolean();
                                 scanner.nextLine();
-                                System.out.print("Número máximo de alunos: ");
-                                maxStudents = scanner.nextInt();
+                                System.out.println("Professores disponíveis:");
+                                for (Professor professor : professors) {
+                                    System.out.println("ID: " + professor.getId() + " | Nome: " + professor.getName());
+                                }
+                                System.out.print("Selecione o nome do professor responsável: ");
+                                professorName = scanner.nextLine();
                                 scanner.nextLine();
-                                System.out.print("Professor responsável: ");
-                                professor = scanner.nextLine();
-                                System.out.print("ID do curso associado: ");
+                                System.out.println("Cursos disponíveis:");
+                                for (Course course : courses) {
+                                    System.out.println("ID: " + course.getId() + " | Nome: " + course.getName());
+                                }
+                                System.out.print("Selecione o ID do curso associado: ");
                                 courseId = scanner.nextInt();
+                                scanner.nextLine();
                                 scanner.nextLine();
                                 if (!Course.courseExistsById(courseId, courses)) {
                                     System.out.println(
                                             "Curso não encontrado. Crie o curso antes de editar a disciplina.");
                                 } else {
-                                    secretaria.editSubject(subjectId, newName, isMandatory, maxStudents, professor,
+                                    secretaria.editSubject(subjectId, newName, isMandatory, professorName,
                                             courseId, subjects);
                                     Subject.saveSubjects(subjects, SUBJECTS_FILE);
                                 }

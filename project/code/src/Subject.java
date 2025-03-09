@@ -132,7 +132,7 @@ public class Subject {
     }
 
     public void setEnrollmentOpen(boolean isEnrollmentOpen) {
-        this.isEnrollmentOpen = isEnrollmentOpen;
-    }
+    this.isEnrollmentOpen = isEnrollmentOpen;
+}
 
 }

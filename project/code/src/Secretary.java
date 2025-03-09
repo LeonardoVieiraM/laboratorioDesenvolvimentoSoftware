@@ -47,8 +47,8 @@ public class Secretary extends User {
         for (Course course : courses) {
             System.out.println("Curso: " + course.getName() + " | Créditos: " + course.getCredits());
             System.out.println("Disciplinas:");
-            for (Subject subject : course.getSubjects()) { // Iterar sobre objetos Subject
-                System.out.println("  - Disciplina: " + subject.getName() + " (ID: " + subject.getId() + ")");
+            for (Subject subject : course.getSubjects()) {
+                System.out.println("  - " + subject.getName() + " (ID: " + subject.getId() + ")");
             }
         }
     }
@@ -117,13 +117,23 @@ public class Secretary extends User {
         System.out.println("Professor " + professorId + " não encontrado.");
     }
 
-    public void addSubject(String name, boolean isMandatory, String professor, int courseId, List<Subject> subjects, List<Course> courses) {
+    public static void addSubject(String name, boolean isMandatory, String professor, int courseId, List<Subject> subjects, List<Course> courses) {
         if (!Course.courseExistsById(courseId, courses)) {
             System.out.println("Curso não encontrado.");
             return;
         }
         Subject newSubject = new Subject(subjects.size() + 1, name, isMandatory, professor, courseId);
         subjects.add(newSubject);
+    
+        // Associar a disciplina ao curso
+        Course course = courses.stream()
+                .filter(c -> c.getId() == courseId)
+                .findFirst()
+                .orElse(null);
+        if (course != null) {
+            course.addSubject(newSubject);
+        }
+    
         Subject.saveSubjects(subjects, SUBJECTS_FILE); 
         System.out.println("Disciplina " + name + " adicionada com sucesso.");
     }
@@ -133,7 +143,7 @@ public class Secretary extends User {
         System.out.println("Disciplina " + subjectId + " removida com sucesso.");
     }
 
-    public void editSubject(int subjectId, String newName, boolean isMandatory, int maxStudents, String professor, int courseId, List<Subject> subjects) {
+    public void editSubject(int subjectId, String newName, boolean isMandatory, String professor, int courseId, List<Subject> subjects) {
         for (Subject subject : subjects) {
             if (subject.getId() == subjectId) {
                 subject.setName(newName);

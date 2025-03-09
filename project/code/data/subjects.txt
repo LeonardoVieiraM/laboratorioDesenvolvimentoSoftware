@@ -1,3 +1,5 @@
-1,Programação I,true,60,Dr. Silva,0
-2,Banco de Dados,false,60,Dr. Souza,0
-3,fdfd,true,60,aaa,1
+1,Programação I,false,Dr. Silva,1
+2,Banco de Dados,true,Dr. Souza,1
+3,lol 111,true,aaa,3
+4,lol 102,false,aaa,3
+5,lol 103,true,aaa,3
