@@ -7,60 +7,67 @@ class usuario{
 }
 
 class cobrador{
-+acionarPagamentoAluno(int): void
++notificarPagamento(int): void
 }
 
 class aluno{
--matriculaAluno: int
 -nome: string
--curso: string
+-cursoId: int
 -disciplinasObrigatorias: [int]
 -disciplinasOptativas: [int]
 -pagamentoPendente: bool
-+realizarMatriculaDisciplina(int): void
-+cancelarMatriculaDisciplina(int): void
++realizarMatriculaDisciplina(disciplina): void
++cancelarMatriculaDisciplina(disciplina): void
 +realizarPagamento(): void
 }
 
 class professor{
--idProfessor: int
 -nome: string
-+acompanharDisciplina(int): void
++verAlunosMatriculados(disciplina): void
 }
 
 class secretaria{
--idSecretaria: int
 -nome: string
-+visualizarCurriculoSemestre(): void
-+visualizarMatriculasAlunos(): void
-+adicionarMatriculaAluno(string): aluno
-+removerMatriculaAluno(int): void
-+editarMatriculaAluno(int): void
-+visualizarProfessores(): void
-+adicionarProfessor(string): professor
-+removerProfessor(int): void
-+editarProfessor(int): void
-+visualizarDisciplinas(): void
-+adicionarDisciplina(string): disciplina
-+removerDisciplina(int): void
-+editarDisciplina(int): void
-+periodoMatriculas(): void
++criarCurso(): void
++verCursos(curso): void
++atualizarCurso(curso): void
++removerCurso(curso): void
++verCurriculo(curso): void
++verMatriculaDosAlunos(aluno): void
++adicionarAluno(): aluno
++removerAluno(aluno): void
++editarAluno(aluno): void
++adicionarProfessor(): professor
++removerProfessor(professor): void
++editarProfessor(professor): void
++adicionarDisciplina(): disciplina
++removerDisciplina(disciplina): void
++editarDisciplina(disciplina): void
++abrirPeriodoDeMatriculas(): void
++fecharPeriodoDeMatriculas(): void
 }
 
 class disciplina{
 -id: int
 -nome: string
--opcional: bool
+-eObrigatoria: bool
 -alunosMax: int
--alunos: [int]
+-alunosMatriculados: [int]
 -matriculaAberta: bool
 -professor: string
+-estaAtiva:bool
+-cursoId:int
++fecharMatricula(): void
++matricularAluno(aluno): void
 }
 
 class curso{
+-id: int
 -nome: string
--disciplinas: [int]
 -creditos: int
+-disciplinas: [disciplina]
++adicionarDisciplina(disciplina): void
++removerDisciplina(disciplina): void
 }
 
 usuario <|-- aluno
