@@ -11,8 +11,8 @@ public class Main {
     private static final String STUDENTS_FILE = DATA_DIR + "students.txt";
     private static final String PROFESSORS_FILE = DATA_DIR + "professors.txt";
     private static final String SECRETARIA_FILE = DATA_DIR + "secretaria.txt";
-    private static final String COURSES_FILE = DATA_DIR+ "courses.txt";
-    private static final String SUBJECTS_FILE = DATA_DIR+ "subjects.txt";
+    private static final String COURSES_FILE = DATA_DIR + "courses.txt";
+    private static final String SUBJECTS_FILE = DATA_DIR + "subjects.txt";
 
     private static Scanner scanner = new Scanner(System.in);
 
@@ -57,9 +57,9 @@ public class Main {
     private static void loadInitialData() {
         courses.add(new Course("Ciência da Computação", 120));
         courses.add(new Course("Engenharia de Software", 120));
-
-        subjects.add(new Subject(1, "Programação I", false, 60, "Dr. Silva"));
-        subjects.add(new Subject(2, "Banco de Dados", true, 60, "Dr. Souza"));
+    
+        subjects.add(new Subject(1, "Programação I", false, "Dr. Silva", 1));
+        subjects.add(new Subject(2, "Banco de Dados", true, "Dr. Souza", 1));
     }
 
     // Menu do Aluno
@@ -100,39 +100,29 @@ public class Main {
         String name = scanner.nextLine();
         System.out.print("Curso: ");
         String courseName = scanner.nextLine();
-    
+
         // Verificar se o curso existe e obter seu ID
-        int courseId = getCourseIdByName(courseName, courses);
+        int courseId = Course.getCourseIdByName(courseName, courses); // Chamada correta
         if (courseId == -1) {
             System.out.println("Curso não encontrado.");
             return;
         }
-    
+
         // Salvar no arquivo users.txt
         boolean userSaved = saveToFile(USERS_FILE, id + "," + password + ",student," + name + "," + courseId + "\n");
         if (!userSaved) {
             System.out.println("Erro ao salvar dados do usuário.");
             return;
         }
-    
+
         // Salvar no arquivo students.txt
         boolean studentSaved = saveToFile(STUDENTS_FILE, id + "," + name + "," + courseId + ",,,\n");
         if (!studentSaved) {
             System.out.println("Erro ao salvar dados do aluno.");
             return;
         }
-    
-        System.out.println("Aluno cadastrado com sucesso!");
-    }
 
-    // Método auxiliar para verificar se um curso existe
-    private static boolean courseExists(String courseName, List<Course> courses) {
-        for (Course course : courses) {
-            if (course.getName().equals(courseName)) {
-                return true;
-            }
-        }
-        return false;
+        System.out.println("Aluno cadastrado com sucesso!");
     }
 
     // Método genérico para salvar dados em um arquivo
@@ -154,7 +144,7 @@ public class Main {
         scanner.nextLine();
         System.out.print("Senha: ");
         String password = scanner.nextLine();
-    
+
         // Verificar credenciais no arquivo users.txt
         try (Scanner fileScanner = new Scanner(new File(USERS_FILE))) {
             while (fileScanner.hasNextLine()) {
@@ -162,12 +152,12 @@ public class Main {
                 if (userData[0].equals(String.valueOf(id)) && userData[1].equals(password)
                         && userData[2].equals("student")) {
                     System.out.println("Login bem-sucedido!");
-    
+
                     // Criar objeto Student
                     String name = userData[3];
-                    int courseId = Integer.parseInt(userData[4]); // Carrega o ID do curso
+                    int courseId = Integer.parseInt(userData[4]);
                     Student student = new Student(id, password, name, courseId);
-    
+
                     // Menu de funcionalidades do aluno
                     while (true) {
                         System.out.println("\nMenu do Aluno:");
@@ -178,13 +168,13 @@ public class Main {
                         System.out.print("Opção: ");
                         int choice = scanner.nextInt();
                         scanner.nextLine();
-    
+
                         switch (choice) {
                             case 1:
                                 System.out.print("ID da disciplina: ");
                                 int subjectId = scanner.nextInt();
                                 scanner.nextLine();
-                                student.enrollSubject(subjectId, subjects);
+                                student.enrollSubject(subjectId, subjects, billingSystem); // Passa o BillingSystem
                                 break;
                             case 2:
                                 System.out.print("ID da disciplina: ");
@@ -384,11 +374,11 @@ public class Main {
                 if (userData[0].equals(String.valueOf(id)) && userData[1].equals(password)
                         && userData[2].equals("secretaria")) {
                     System.out.println("Login bem-sucedido!");
-        
+
                     // Criar objeto Secretaria
                     String name = userData[3];
                     Secretary secretaria = new Secretary(id, password, name);
-        
+
                     // Menu de funcionalidades da secretaria
                     while (true) {
                         System.out.println("\nMenu da Secretaria:");
@@ -413,7 +403,7 @@ public class Main {
                         System.out.print("Opção: ");
                         int choice = scanner.nextInt();
                         scanner.nextLine();
-        
+
                         switch (choice) {
                             case 1:
                                 secretaria.viewCurriculum(courses);
@@ -424,13 +414,10 @@ public class Main {
                             case 3:
                                 System.out.print("Nome do aluno: ");
                                 String studentName = scanner.nextLine();
-                                System.out.print("Curso do aluno: ");
-                                String course = scanner.nextLine();
-                                if (!courseExists(course, courses)) {
-                                    System.out.println("Curso não encontrado. Crie o curso antes de adicionar o aluno.");
-                                } else {
-                                    secretaria.addStudent(studentName, course, courses);
-                                }
+                                System.out.print("Curso do aluno (ID): ");
+                                int courseId = scanner.nextInt();
+                                scanner.nextLine();
+                                secretaria.addStudent(studentName, courseId, students, courses);
                                 break;
                             case 4:
                                 System.out.print("ID do aluno: ");
@@ -446,11 +433,7 @@ public class Main {
                                 String newName = scanner.nextLine();
                                 System.out.print("Novo curso: ");
                                 String newCourse = scanner.nextLine();
-                                if (!courseExists(newCourse, courses)) {
-                                    System.out.println("Curso não encontrado. Crie o curso antes de editar o aluno.");
-                                } else {
-                                    secretaria.editStudent(studentId, newName, newCourse, students);
-                                }
+                                secretaria.editStudent(studentId, newName, newCourse, students, courses);
                                 break;
                             case 6:
                                 System.out.print("Nome do professor: ");
@@ -483,13 +466,15 @@ public class Main {
                                 System.out.print("Professor responsável: ");
                                 String professor = scanner.nextLine();
                                 System.out.print("ID do curso associado: ");
-                                int courseId = scanner.nextInt();
+                                courseId = scanner.nextInt();
                                 scanner.nextLine();
                                 if (!Course.courseExistsById(courseId, courses)) {
-                                    System.out.println("Curso não encontrado. Crie o curso antes de adicionar a disciplina.");
+                                    System.out.println(
+                                            "Curso não encontrado. Crie o curso antes de adicionar a disciplina.");
                                 } else {
-                                    secretaria.addSubject(subjectName, isMandatory, maxStudents, professor, courseId, subjects, courses);
-                                    Subject.saveSubjects(subjects, SUBJECTS_FILE); 
+                                    secretaria.addSubject(subjectName, isMandatory, maxStudents, professor, courseId,
+                                            subjects, courses);
+                                    Subject.saveSubjects(subjects, SUBJECTS_FILE);
                                 }
                                 break;
                             case 10:
@@ -497,7 +482,7 @@ public class Main {
                                 int subjectId = scanner.nextInt();
                                 scanner.nextLine();
                                 secretaria.removeSubject(subjectId, subjects);
-                                Subject.saveSubjects(subjects, SUBJECTS_FILE); 
+                                Subject.saveSubjects(subjects, SUBJECTS_FILE);
                                 break;
                             case 11:
                                 System.out.print("ID da disciplina: ");
@@ -517,10 +502,12 @@ public class Main {
                                 courseId = scanner.nextInt();
                                 scanner.nextLine();
                                 if (!Course.courseExistsById(courseId, courses)) {
-                                    System.out.println("Curso não encontrado. Crie o curso antes de editar a disciplina.");
+                                    System.out.println(
+                                            "Curso não encontrado. Crie o curso antes de editar a disciplina.");
                                 } else {
-                                    secretaria.editSubject(subjectId, newName, isMandatory, maxStudents, professor, courseId, subjects);
-                                    Subject.saveSubjects(subjects, SUBJECTS_FILE); 
+                                    secretaria.editSubject(subjectId, newName, isMandatory, maxStudents, professor,
+                                            courseId, subjects);
+                                    Subject.saveSubjects(subjects, SUBJECTS_FILE);
                                 }
                                 break;
                             case 12:
@@ -536,7 +523,7 @@ public class Main {
                                 int credits = scanner.nextInt();
                                 scanner.nextLine();
                                 secretaria.createCourse(courseName, credits, courses);
-                                Course.saveCourses(courses, COURSES_FILE); // Salva os cursos no arquivo
+                                Course.saveCourses(courses, COURSES_FILE);
                                 break;
                             case 15:
                                 secretaria.viewCourses(courses);
@@ -551,14 +538,14 @@ public class Main {
                                 int newCredits = scanner.nextInt();
                                 scanner.nextLine();
                                 secretaria.updateCourse(courseId, newCourseName, newCredits, courses);
-                                Course.saveCourses(courses, COURSES_FILE); 
+                                Course.saveCourses(courses, COURSES_FILE);
                                 break;
                             case 17:
                                 System.out.print("ID do curso: ");
                                 courseId = scanner.nextInt();
                                 scanner.nextLine();
                                 secretaria.deleteCourse(courseId, courses);
-                                Course.saveCourses(courses, COURSES_FILE); 
+                                Course.saveCourses(courses, COURSES_FILE);
                                 break;
                             case 0:
                                 return;

@@ -12,14 +12,12 @@ public class Secretary extends User {
     private static final String SUBJECTS_FILE = DATA_DIR+ "subjects.txt";
 
 
-    // Método para adicionar um curso
     public void createCourse(String name, int credits, List<Course> courses) {
         Course newCourse = new Course(name, credits);
         courses.add(newCourse);
         System.out.println("Curso " + name + " adicionado com sucesso.");
     }
 
-    // Método para visualizar todos os cursos
     public void viewCourses(List<Course> courses) {
         System.out.println("Lista de cursos:");
         for (Course course : courses) {
@@ -27,7 +25,6 @@ public class Secretary extends User {
         }
     }
 
-    // Método para atualizar um curso
     public void updateCourse(int courseId, String newName, int newCredits, List<Course> courses) {
         for (Course course : courses) {
             if (course.getId() == courseId) {
@@ -40,25 +37,22 @@ public class Secretary extends User {
         System.out.println("Curso " + courseId + " não encontrado.");
     }
 
-    // Método para excluir um curso
     public void deleteCourse(int courseId, List<Course> courses) {
         courses.removeIf(course -> course.getId() == courseId);
         System.out.println("Curso " + courseId + " excluído com sucesso.");
     }
 
-    // Método para visualizar o currículo
     public void viewCurriculum(List<Course> courses) {
         System.out.println("Currículo:");
         for (Course course : courses) {
             System.out.println("Curso: " + course.getName() + " | Créditos: " + course.getCredits());
             System.out.println("Disciplinas:");
-            for (int subjectId : course.getSubjects()) {
-                System.out.println("  - Disciplina ID: " + subjectId);
+            for (Subject subject : course.getSubjects()) { // Iterar sobre objetos Subject
+                System.out.println("  - Disciplina: " + subject.getName() + " (ID: " + subject.getId() + ")");
             }
         }
     }
 
-    // Método para visualizar as matrículas dos alunos
     public void viewStudentEnrollments(List<Student> students) {
         System.out.println("Matrículas dos alunos:");
         for (Student student : students) {
@@ -68,28 +62,33 @@ public class Secretary extends User {
         }
     }
 
-    // Método para adicionar um aluno
-    public Student addStudent(String name, String course, List<Course> courses) {
-        if (!courseExists(course, courses)) {
+    public Student addStudent(String name, int courseId, List<Student> students, List<Course> courses) {
+        if (!Course.courseExistsById(courseId, courses)) {
             System.out.println("Curso não encontrado.");
             return null;
         }
+        int newId = students.size() + 1; 
+        Student newStudent = new Student(newId, "senha", name, courseId);
+        students.add(newStudent);
         System.out.println("Aluno " + name + " adicionado com sucesso.");
-        return new Student(0, "senha", name, course);
+        return newStudent;
     }
 
-    // Método para remover um aluno
     public void removeStudent(int studentId, List<Student> students) {
         students.removeIf(student -> student.getId() == studentId);
         System.out.println("Aluno " + studentId + " removido com sucesso.");
     }
 
-    // Método para editar um aluno
-    public void editStudent(int studentId, String newName, String newCourse, List<Student> students) {
+    public void editStudent(int studentId, String newName, String newCourseName, List<Student> students, List<Course> courses) {
+        int courseId = Course.getCourseIdByName(newCourseName, courses); // Chamada correta
+        if (courseId == -1) {
+            System.out.println("Curso não encontrado.");
+            return;
+        }
         for (Student student : students) {
             if (student.getId() == studentId) {
                 student.setName(newName);
-                student.setCourse(newCourse);
+                student.setCourse(courseId);
                 System.out.println("Aluno " + studentId + " editado com sucesso.");
                 return;
             }
@@ -97,19 +96,16 @@ public class Secretary extends User {
         System.out.println("Aluno " + studentId + " não encontrado.");
     }
 
-    // Método para adicionar um professor
     public Professor addProfessor(String name) {
         System.out.println("Professor " + name + " adicionado com sucesso.");
         return new Professor(0, "senha", name);
     }
 
-    // Método para remover um professor
     public void removeProfessor(int professorId, List<Professor> professors) {
         professors.removeIf(professor -> professor.getId() == professorId);
         System.out.println("Professor " + professorId + " removido com sucesso.");
     }
 
-    // Método para editar um professor
     public void editProfessor(int professorId, String newName, List<Professor> professors) {
         for (Professor professor : professors) {
             if (professor.getId() == professorId) {
@@ -121,19 +117,17 @@ public class Secretary extends User {
         System.out.println("Professor " + professorId + " não encontrado.");
     }
 
-    // Método para adicionar uma disciplina
-    public void addSubject(String name, boolean isMandatory, int maxStudents, String professor, int courseId, List<Subject> subjects, List<Course> courses) {
+    public void addSubject(String name, boolean isMandatory, String professor, int courseId, List<Subject> subjects, List<Course> courses) {
         if (!Course.courseExistsById(courseId, courses)) {
             System.out.println("Curso não encontrado.");
             return;
         }
-        Subject newSubject = new Subject(subjects.size() + 1, name, isMandatory, maxStudents, professor, courseId);
+        Subject newSubject = new Subject(subjects.size() + 1, name, isMandatory, professor, courseId);
         subjects.add(newSubject);
         Subject.saveSubjects(subjects, SUBJECTS_FILE); 
         System.out.println("Disciplina " + name + " adicionada com sucesso.");
     }
 
-    // Método para remover uma disciplina
     public void removeSubject(int subjectId, List<Subject> subjects) {
         subjects.removeIf(subject -> subject.getId() == subjectId);
         System.out.println("Disciplina " + subjectId + " removida com sucesso.");
@@ -146,9 +140,9 @@ public class Secretary extends User {
                 subject.setMandatory(isMandatory);
                 subject.setMaxStudents(maxStudents);
                 subject.setProfessor(professor);
-                subject.setCourseId(courseId); // Atualiza o ID do curso associado
+                subject.setCourseId(courseId); 
                 System.out.println("Disciplina " + subjectId + " editada com sucesso.");
-                Subject.saveSubjects(subjects, SUBJECTS_FILE); // Salva as disciplinas no arquivo
+                Subject.saveSubjects(subjects, SUBJECTS_FILE); 
                 return;
             }
         }
@@ -156,24 +150,24 @@ public class Secretary extends User {
     }
     
 
-    // Método para abrir o período de matrículas
-    public void openEnrollmentPeriod() {
+    public void openEnrollmentPeriod(List<Subject> subjects) {
+        for (Subject subject : subjects) {
+            subject.setEnrollmentOpen(true); // Abre as matrículas para todas as disciplinas
+        }
         System.out.println("Período de matrículas aberto.");
     }
 
-    // Método para fechar o período de matrículas
-    public void closeEnrollmentPeriod() {
-        System.out.println("Período de matrículas fechado.");
-    }
-
-    // Método auxiliar para verificar se um curso existe
-    private boolean courseExists(String courseName, List<Course> courses) {
-        for (Course course : courses) {
-            if (course.getName().equals(courseName)) {
-                return true;
+    public void closeEnrollmentPeriod(List<Subject> subjects) {
+        for (Subject subject : subjects) {
+            if (subject.getEnrolledStudents().size() >= 3) {
+                subject.setActive(true);
+                System.out.println("Disciplina " + subject.getName() + " ativada.");
+            } else {
+                subject.setActive(false);
+                System.out.println("Disciplina " + subject.getName() + " cancelada.");
             }
         }
-        return false;
+        System.out.println("Período de matrículas fechado.");
     }
 
     @Override

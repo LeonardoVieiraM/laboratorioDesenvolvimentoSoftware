@@ -1,4 +1,2 @@
-1,Ciência da Computação,120
+1,aaaaaaa,120
 2,Engenharia de Software,120
-3,aaa,120
-4,bbb,120
