@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -54,6 +55,7 @@ public class Student extends User {
                 mandatorySubjects.add(subjectId);
                 billingSystem.notifyPayment(this.id); // Notifica o sistema de cobrança
                 paymentPending = true;
+                //updateStudentFile();
                 System.out.println("Disciplina obrigatória " + subjectId + " adicionada com sucesso.");
             } else {
                 System.out.println("Limite de disciplinas obrigatórias atingido.");
@@ -63,6 +65,7 @@ public class Student extends User {
                 optionalSubjects.add(subjectId);
                 billingSystem.notifyPayment(this.id); // Notifica o sistema de cobrança
                 paymentPending = true;
+                //updateStudentFile();
                 System.out.println("Disciplina optativa " + subjectId + " adicionada com sucesso.");
             } else {
                 System.out.println("Limite de disciplinas optativas atingido.");
@@ -147,5 +150,17 @@ public static List<Student> loadStudents(String filePath) {
     }
     return students;
 }
+
+/*private void updateStudentFile() {
+    int alunoId = getId();
+
+    try {
+    PrintWriter writer = new PrintWriter(new FileWriter("students.txt"));
+    writer.println(alunoId + "," +this.name + "," + this.courseId + "," + this.mandatorySubjects + "," + this.optionalSubjects + "," + this.paymentPending);
+    }
+    catch (IOException e) {
+        System.out.println("Erro ao atualizar o arquivo students.txt: " + e.getMessage());
+    }
+}*/
 
 }
