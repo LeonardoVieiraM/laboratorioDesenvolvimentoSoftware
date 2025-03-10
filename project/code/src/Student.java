@@ -254,7 +254,7 @@ private static List<Integer> extractSubjects(String subjectString) {
         try {
             subjects.add(Integer.parseInt(part));
         } catch (NumberFormatException e) {
-            System.out.println("Erro ao converter disciplina: '" + part + "'");
+            //System.out.println("Erro ao converter disciplina: '" + part + "'");
         }
     }
 
