@@ -1,9 +1,5 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-import java.io.FileWriter;
-import java.io.File;
-import java.io.IOException;
+import java.util.*;
+import java.io.*;
 
 public class Main {
     private static final String DATA_DIR = "./project/code/data/";
@@ -83,6 +79,10 @@ public class Main {
 
     // Menu do Aluno
     private static void handleStudentMenu() {
+        courses = Course.loadCourses(COURSES_FILE);
+        subjects = Subject.loadSubjects(SUBJECTS_FILE);
+        professors = Professor.loadProfessors(PROFESSORS_FILE);
+        students = Student.loadStudents(STUDENTS_FILE);
         while (true) {
             System.out.println("\nMenu do Aluno:");
             System.out.println("1 - Cadastrar");
@@ -108,68 +108,82 @@ public class Main {
     }
 
     // Cadastro de Aluno
-    private static void registerStudent(List<Course> courses) {
-        System.out.println("\nCadastro de Aluno:");
+private static void registerStudent(List<Course> courses) {
+    System.out.println("\nCadastro de Aluno:");
 
-        // Exibir lista de cursos cadastrados
-        System.out.println("Cursos disponíveis:");
-        for (Course course : courses) {
-            System.out.println("ID: " + course.getId() + " | Nome: " + course.getName());
-        }
-
-        // Solicitar ID do curso
-        System.out.print("Selecione o ID do curso: ");
-        int courseId = scanner.nextInt();
-        scanner.nextLine();
-
-        // Verificar se o curso existe
-        if (!Course.courseExistsById(courseId, courses)) {
-            System.out.println("Curso não encontrado.");
-            return;
-        }
-
-        // Solicitar nome e senha do aluno
-        System.out.print("Nome do aluno: ");
-        String name = scanner.nextLine();
-        System.out.print("Senha do aluno: ");
-        String password = scanner.nextLine();
-
-        // Gerar ID automático para o aluno
-        int newId = students.size() + 1;
-
-        // Criar e adicionar o aluno à lista
-        Student newStudent = new Student(newId, password, name, courseId);
-        students.add(newStudent);
-
-        // Salvar no arquivo users.txt
-        boolean userSaved = saveToFile(USERS_FILE, newId + "," + password + ",student," + name + "," + courseId + "\n");
-        if (!userSaved) {
-            System.out.println("Erro ao salvar dados do usuário.");
-            return;
-        }
-
-        // Salvar no arquivo students.txt
-        boolean studentSaved = saveToFile(STUDENTS_FILE, newId + "," + name + "," + courseId + ",,,\n");
-        if (!studentSaved) {
-            System.out.println("Erro ao salvar dados do aluno.");
-            return;
-        }
-
-        System.out.println("Aluno cadastrado com sucesso!");
-        System.out.println("ID do aluno: " + newId);
-        System.out.println("Nome do aluno: " + name);
+    // Exibir lista de cursos cadastrados
+    System.out.println("Cursos disponíveis:");
+    for (Course course : courses) {
+        System.out.println("ID: " + course.getId() + " | Nome: " + course.getName());
     }
 
-    // Método genérico para salvar dados em um arquivo
-    private static boolean saveToFile(String fileName, String data) {
-        try (FileWriter writer = new FileWriter(fileName, true)) {
-            writer.write(data);
-            return true;
-        } catch (IOException e) {
-            System.out.println("Erro ao acessar o arquivo: " + fileName);
-            return false;
-        }
+    // Solicitar ID do curso
+    System.out.print("Selecione o ID do curso: ");
+    int courseId = scanner.nextInt();
+    scanner.nextLine();
+
+    // Verificar se o curso existe
+    if (!Course.courseExistsById(courseId, courses)) {
+        System.out.println("Curso não encontrado.");
+        return;
     }
+
+    // Solicitar nome e senha do aluno
+    System.out.print("Nome do aluno: ");
+    String name = scanner.nextLine();
+    System.out.print("Senha do aluno: ");
+    String password = scanner.nextLine();
+
+    // Gerar ID automático para o aluno
+    int newId = students.size() + 1;
+
+    // Criar e adicionar o aluno à lista
+    Student newStudent = new Student(newId, password, name, courseId);
+    students.add(newStudent);
+
+    // Formatar os dados do estudante para escrita no arquivo
+    String studentData = formatStudentData(newStudent);
+
+    // Salvar no arquivo users.txt
+    if (!saveToFile(USERS_FILE, newId + "," + password + ",student," + name + "," + courseId + "\n")) {
+        System.out.println("Erro ao salvar dados do usuário.");
+        return;
+    }
+
+    // Salvar no arquivo students.txt
+    if (!saveToFile(STUDENTS_FILE, studentData)) {
+        System.out.println("Erro ao salvar dados do aluno.");
+        return;
+    }
+
+    System.out.println("Aluno cadastrado com sucesso!");
+    System.out.println("ID do aluno: " + newId);
+    System.out.println("Nome do aluno: " + name);
+}
+
+// Método para formatar os dados do estudante de maneira clara e correta
+private static String formatStudentData(Student student) {
+    return String.format("%d,%s,%d,%s,%s,%b\n",
+        student.getId(),
+        student.getName(),
+        student.getCourse(),
+        student.getMandatorySubjects().toString(),
+        student.getOptionalSubjects().toString(),
+        student.getPaymentPending()
+    );
+}
+
+// Método genérico para salvar dados no arquivo
+private static boolean saveToFile(String filePath, String data) {
+    try (FileWriter fileWriter = new FileWriter(filePath, true);
+         BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+        bufferedWriter.write(data);
+        return true;
+    } catch (IOException e) {
+        System.out.println("Erro ao escrever no arquivo " + filePath + ": " + e.getMessage());
+        return false;
+    }
+}
 
     // Login de Aluno
     private static void loginStudent() {
@@ -236,6 +250,10 @@ public class Main {
 
     // Menu do Professor
     private static void handleProfessorMenu() {
+        courses = Course.loadCourses(COURSES_FILE);
+        subjects = Subject.loadSubjects(SUBJECTS_FILE);
+        professors = Professor.loadProfessors(PROFESSORS_FILE);
+        students = Student.loadStudents(STUDENTS_FILE);
         while (true) {
             System.out.println("\nMenu do Professor:");
             System.out.println("1 - Cadastrar");
@@ -347,6 +365,10 @@ public class Main {
 
     // Menu da Secretaria
     private static void handleSecretariaMenu() {
+        courses = Course.loadCourses(COURSES_FILE);
+        subjects = Subject.loadSubjects(SUBJECTS_FILE);
+        professors = Professor.loadProfessors(PROFESSORS_FILE);
+        students = Student.loadStudents(STUDENTS_FILE);
         while (true) {
             System.out.println("\nMenu da Secretaria:");
             System.out.println("1 - Cadastrar");

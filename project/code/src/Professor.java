@@ -26,14 +26,27 @@ public class Professor extends User {
 
     // Método para visualizar alunos matriculados em uma disciplina
     public void viewEnrolledStudents(int subjectId, List<Student> students) {
-        System.out.println("Alunos matriculados na disciplina " + subjectId + ":");
+        System.out.println("\nAlunos matriculados na disciplina " + subjectId + ":");
+    
+        boolean found = false;
         for (Student student : students) {
-            if (student.getMandatorySubjects().contains(subjectId)
-                    || student.getOptionalSubjects().contains(subjectId)) {
-                System.out.println(student.getName());
+            List<Integer> mandatorySubjects = student.getMandatorySubjects();
+            List<Integer> optionalSubjects = student.getOptionalSubjects();
+    
+            // Verifica se a disciplina está na lista de obrigatórias ou opcionais
+            if ((mandatorySubjects != null && mandatorySubjects.contains(subjectId)) ||
+                (optionalSubjects != null && optionalSubjects.contains(subjectId))) {
+                
+                System.out.println("- " + student.getName());
+                found = true;
             }
         }
+    
+        if (!found) {
+            System.out.println("Nenhum aluno matriculado nesta disciplina.");
+        }
     }
+    
 
     public static List<Professor> loadProfessors(String filePath) {
         List<Professor> professors = new ArrayList<>();
